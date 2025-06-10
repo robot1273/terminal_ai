@@ -23,8 +23,8 @@ def get_shell_config_location():
 
 shell_config_location = get_shell_config_location()
 
-def create_alias(script_location, alias):
-    alias_line = f"alias {alias}=\"python3 {script_location}\""
+def create_alias(command, alias):
+    alias_line = f"alias {alias}=\"{command}\""
 
     pattern = re.compile(rf"\s*alias\s+({alias})\s*=")
     if os.path.exists(shell_config_location):
@@ -42,7 +42,7 @@ def create_alias(script_location, alias):
     with open(shell_config_location, "a") as f:
         f.write(alias_line + "\n")
 
-    print(f"Successfully created alias {alias} for {script_location} in {shell_config_location}")
+    print(f"Successfully created alias {alias} for {command} in {shell_config_location}")
 
 def remove_alias(alias=None, clear_all=False, confirm=True):
     if not os.path.exists(shell_config_location):

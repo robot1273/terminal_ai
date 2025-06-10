@@ -1,6 +1,6 @@
-from backend.message import Message, Chat
-from backend.model import GeminiModel, GeminiModelParameters
-from backend.util import output_wrapped_stream
+from ai_core.message import Message, Chat
+from ai_core.model import GeminiModel, GeminiModelParameters
+from ai_core.util import output_wrapped_stream
 
 import os
 from dotenv import find_dotenv, load_dotenv
@@ -30,17 +30,22 @@ def start_chat(chat_source):
 
     while True:
         prompt = input(">> ")
+
         if len(prompt) != 0:
             match prompt.lower().strip():
                 case "quit" | "q" | "bye" | "exit":
                     chat.export(chat_source)
                     break
-                case "clear": chat.clear()
+                case "clear":
+                    chat.clear()
+                    print("Chat cleared")
+                    continue
                 case "retry":
+                    print("Regenerating a new response")
                     chat.remove_last_message()
                     continue
                 case "save":
-                    chat.export(chat_source)
+                    chat.export(chat_source, confirm_export = True)
                     continue
 
             chat.add_message(Message("user", prompt))
