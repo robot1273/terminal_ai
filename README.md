@@ -1,5 +1,4 @@
 # terminal-ai
-
 This is a simple CLI tool for chatting to an LLM.
 
 Currently, only gemini is supported, but I'll add ollama support later. Nothing else is planned for now.
