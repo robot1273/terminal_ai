@@ -23,7 +23,10 @@ def output_wrapped_stream(stream, max_chars = 90):
             current_line = ""
             print("")
 
-    return capture
+    if not capture.endswith("\n"):
+        print("")
+
+    return capture.strip()
 
 def output_stream(stream):
     capture = ""
@@ -31,4 +34,7 @@ def output_stream(stream):
         capture += raw_chunk
         print(raw_chunk, end = "")
 
-    return capture
+    if not capture.endswith("\n"):
+        print("")
+
+    return capture.strip()

@@ -2,7 +2,6 @@ import json
 import requests
 
 from typing import Iterator
-from .message import Chat
 from .util import connected_to_internet
 
 class ModelError(Exception):
@@ -96,7 +95,7 @@ class GeminiModel(Model):
     """
     def __init__(self, model_name: str, API_KEY : str, debug: bool = False, parameters: GeminiModelParameters = None):
         """
-        :param model_name: The name of the model to use. Should be existing ollama model
+        :param model_name: The name of the model to use. Should be efxisting ollama model
         :param API_KEY: The API key for accessing the model
         :param debug: Display debug messages or not. Defaults to False
         :param parameters: The model parameters to use
@@ -211,20 +210,20 @@ class GeminiModel(Model):
         except Exception as e:
             raise ModelError(f"An unexpected error occurred: {e}")
 
-    def invoke_chat(self, chat : Chat):
+    def invoke_chat(self, chat_payload : dict[str, dict[str, list]]):
         """
         Get a single LLM output from a given Chat history
-        :param chat: the chat history to use in the chat
+        :param chat_payload: the chat data formatted for usage with the gemini API (chat.get_gemini_payload())
         :return: a stream of the output message
+        TODO Error messsage when invalid payload for debug, also include in stream
+        TODO better yet, refactor this silly code
         """
-        payload = chat.get_gemini_payload()
-        return self.invoke(payload=payload)
+        return self.invoke(payload = chat_payload)
 
-    def stream_chat(self, chat : Chat):
+    def stream_chat(self, chat_payload : dict[str, dict[str, list]]):
         """
         Get a streamed LLM output from a given Chat history
-        :param chat: the Chat class containing system prompts and past messages/history
+        :param chat_payload: the chat data formatted for usage with the gemini API (chat.get_gemini_payload())
         :return: Text stream for the LLM
         """
-        payload = chat.get_gemini_payload()
-        return self.stream(payload = payload)
+        return self.stream(payload = chat_payload)

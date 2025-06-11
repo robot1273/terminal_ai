@@ -7,9 +7,7 @@ remove_alias(clear_all=True, confirm = False)
 
 root_dir = os.path.dirname(os.path.dirname(__file__))
 
-
-
-#script_path = os.path.join(root_dir)
-command = f"cd {root_dir} && python -m app.main"
+script_path = os.path.join(root_dir, "main.py")
+command = f"python3 {script_path}"
 
 create_alias(command, cli_keyword)
