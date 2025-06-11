@@ -1,4 +1,4 @@
-#terminal-ai
+# terminal-ai
 
 This is a simple CLI tool for chatting to an LLM.
 
