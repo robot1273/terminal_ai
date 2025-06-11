@@ -3,7 +3,7 @@ This is a simple CLI tool for chatting to an LLM.
 
 Currently, only gemini is supported, but I'll add ollama support later. Nothing else is planned for now.
 
-# How to use
+## How to use
 
 Create a .env file in the same file as main.py and add the line
 GEMINI_API_KEY="YOUR_KEY_HERE"
