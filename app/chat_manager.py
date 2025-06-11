@@ -20,7 +20,6 @@ class ChatManager:
         """
         Ensures that the stored data exists and the chats are valid
         Creates a new data directory if it doesn't already exist
-        TODO validate chat data if needed
         """
         if not os.path.exists(data_path):
             os.makedirs(data_path, exist_ok=True)

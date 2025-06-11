@@ -1,7 +1,7 @@
 from ai_core.message import Message
 from ai_core.chat import Chat
 from ai_core.model import GeminiModel, GeminiModelParameters
-from ai_core.util import output_wrapped_stream, output_stream
+from ai_core.util import output_stream, markdown_print
 
 import os
 from dotenv import find_dotenv, load_dotenv
@@ -30,26 +30,34 @@ type save to save the chat so far
 type help to display this message
 """
 
-def single_message(message : str, chat_source = None, do_stream = True):
+def output_response(chat, do_stream, do_markdown):
+    if do_stream:
+        stream = model.stream_chat(chat.get_gemini_payload())
+        response = output_stream(stream, do_markdown=do_markdown)
+    else:
+        response = model.invoke_chat(chat.get_gemini_payload())
+        if do_markdown:
+            markdown_print(response.strip())
+        else:
+            print(response.strip())
+
+    return response
+
+def single_message(message : str, chat_source = None, do_stream = True, do_markdown = True):
     chat = Chat()
 
-    if chat_source is not None:
+    if chat_source is not None: #load cha
         chat.load(chat_source, False)
 
     chat.add_message(Message("user", message))
 
-    if do_stream:
-        stream = model.stream_chat(chat.get_gemini_payload())
-        response = output_stream(stream)
-    else:
-        response = model.invoke_chat(chat.get_gemini_payload())
-        print(response.strip())
+    response = output_response(chat, do_stream, do_markdown)
 
     if chat_source is not None:
         chat.add_message(Message("assistant", response))
-        chat.export(chat_source, False)
+        chat.export(chat_source, model, False)
 
-def start_chat(chat_source, do_stream = True):
+def start_chat(chat_source, do_stream = True, do_markdown = True):
     chat = Chat()
 
     chat.load(chat_source, False)
@@ -89,11 +97,6 @@ def start_chat(chat_source, do_stream = True):
 
             chat.add_message(Message("user", prompt))
 
-        if do_stream:
-            stream = model.stream_chat(chat.get_gemini_payload())
-            response = output_stream(stream)
-        else:
-            response = model.invoke_chat(chat.get_gemini_payload())
-            print(response.strip())
+        response = output_response(chat, do_stream, do_markdown)
 
         chat.add_message(Message("assistant", response))

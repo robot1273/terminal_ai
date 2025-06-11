@@ -41,14 +41,20 @@ class App:
 
     # -------------- main commands -------------- #
 
-    def start(self, chat_name: Optional[str] = typer.Argument(None, help="Optional name of the chat history to start.")):
+    def start(self,
+              chat_name: Optional[str] = typer.Argument(None, help="Optional name of the chat history to start."),
+              stream: bool = typer.Option(True, "--nostream", is_flag=True, help = "Disable streaming"),
+              markdown: bool = typer.Option(True, "--nomarkdown", is_flag=True, help = "Disable markdown printing")):
         """
         Starts the chat, optionally giving the name of the chat history to start.
         """
-        chat_core.start_chat(self.chat_manager.select_chat(chat_name))
+        chat_core.start_chat(self.chat_manager.select_chat(chat_name), do_stream = stream, do_markdown=markdown)
 
-    def once(self, message: Optional[list[str]] = typer.Argument(None, help = "The message to send to the LLM"),
-             chat_name: Optional[str] = typer.Option(None, "--chat", help="Specify the chat history name to export")):
+    def once(self,
+             message: Optional[list[str]] = typer.Argument(None, help = "The message to send to the LLM"),
+             chat_name: Optional[str] = typer.Option(None, "--chat", help="Specify the chat history name to export"),
+             stream: bool = typer.Option(True, "--nostream", is_flag=True, help="Disable streaming"),
+             markdown: bool = typer.Option(True, "--nomarkdown", is_flag=True, help="Disable markdown printing")):
         """
         Send a single chat message.
         """
@@ -61,7 +67,7 @@ class App:
         if chat_name is not None:
             chat_source = self.chat_manager.select_chat(chat_name)
 
-        chat_core.single_message(full_message, chat_source, True)
+        chat_core.single_message(full_message, chat_source, stream, markdown)
 
     def list_chats(self):
         """
