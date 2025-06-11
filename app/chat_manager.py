@@ -27,7 +27,21 @@ class ChatManager:
             print(f"Chat data directory not found, new directory created at {data_path}")
 
     def get_chat_paths(self):
+        """
+        :return: a list of all chat .yaml files in the data directory
+        """
         return list(Path(data_path).glob("*.yaml"))
+
+    def get_chat_path(self, chat_name: str):
+        """
+        Get the chat path for a specific chat
+        :param chat_name: the name of the chat get the filepath for
+        :return: The path for the chat if it exists, None otherwise
+        """
+        chat_path = os.path.join(data_path, chat_name + ".yaml")
+        if not os.path.exists(chat_path):
+            return None
+        return chat_path
 
     def get_most_recent_chat(self):
         """
@@ -60,6 +74,24 @@ class ChatManager:
 
         return chat_path
 
+    def get_chat_data(self, chat_name):
+        """
+        Gets the yaml data as a dict from a chat
+        :param chat_name: the chat name to get the data for
+        :return: a dictionary containing the deserialized yaml file, or None if no chat found
+        """
+        chat_path = self.get_chat_path(chat_name)
+
+        if chat_path is None:
+            print(f"No chat with name {chat_name} found. "
+                  f"\nCreate the chat first with chat start {chat_name}, or type chat list to list available chats")
+            return None
+
+        with open(chat_path, "r") as file:
+            data = yaml.safe_load(file)
+
+        return data
+
     def set_system_prompt(self, chat_name : str, system_prompt : str):
         """
         Sets the system prompt for a chat
@@ -67,30 +99,25 @@ class ChatManager:
         :param chat_name: the name of the chat to set the prompt for
         :param system_prompt: the system prompt
         """
-
-        chat_path = os.path.join(data_path, chat_name + ".yaml")
-        if not os.path.exists(chat_path):
-            print(f"No chat with name {chat_name} found. "
-                  f"\nCreate the chat first with chat start {chat_name}, or type chat list to list available chats")
+        chat_path = self.get_chat_path(chat_name)
+        data = self.get_chat_data(chat_name)
+        if data is None:
             return
-
-        with open(chat_path, "r") as file:
-            data = yaml.safe_load(file)
 
         data["system_prompt"] = system_prompt
 
         with open(chat_path, "w") as file:
             yaml.dump(data, file, default_flow_style=False, sort_keys=False)
 
-        print(f"Successfully updated chat in {chat_path} with new system prompt ")
+        print(f"Successfully updated chat '{chat_name}' with new system prompt ")
 
     def delete_chat(self, chat_name : str):
         """
         Deletes a chat after user confirmation
         :param chat_name: the name of the chat to delete
         """
-        chat_path = os.path.join(data_path, chat_name + ".yaml")
-        if not os.path.exists(chat_path):
+        chat_path = self.get_chat_path(chat_name)
+        if chat_path is None:
             print(f"No chat with name {chat_name} found.")
             return
 

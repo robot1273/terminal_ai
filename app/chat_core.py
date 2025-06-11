@@ -75,12 +75,10 @@ def start_chat(chat_source, do_stream = True):
                 case "save":
                     chat.export(chat_source, model, confirm_export = True)
                 case "system" | "systemprompt":
-                    system_prompt = input("Input the new system prompt for this chat "
-                                          "\nType nothing to cancel, type ? to display the current system prompt"
-                                          "\n > ").strip()
-                    if system_prompt == "?":
-                        print(f"Current system prompt:\n\"{chat.system_prompt.strip()}\"\n")
-                    elif system_prompt != "":
+                    print(f"Current system prompt:\n\"{chat.system_prompt.strip()}\"\n")
+                    system_prompt = input("Input the new system prompt for this chat, type nothing to cancel"
+                                          "\nprompt >> ").strip()
+                    if system_prompt != "":
                         chat.set_system_prompt(system_prompt)
                         print("Successfully set system prompt")
                 case _:

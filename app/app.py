@@ -84,18 +84,41 @@ class App:
         Sets the system prompt for the given chat history.
         """
         if chat_name is None:
-            print(f"Error: The --history option is required to specify which chat history to modify.")
+            print(f"Error: The --chat option is required to specify which chat history to modify.")
             raise typer.Exit(code=1)
 
         # Join the list of strings into a single system prompt string
         full_system_prompt = " ".join(system_prompt)
         self.chat_manager.set_system_prompt(chat_name, full_system_prompt)
 
-    def show_system_prompt(self): #TODO
-        pass
+    def show_system_prompt(self, chat_name: str = typer.Argument(help="Specify the chat history name to display the system prompt of.")):
+        """
+        Displays the system prompt for a given chat
+        """
+        chat_data = self.chat_manager.get_chat_data(chat_name)
+        if chat_data is not None:
+            print(f"System prompt for chat '{chat_name}':\n\"{chat_data["system_prompt"].strip()}\"")
 
-    def load_system_prompt(self): #TODO
-        pass
+    def load_system_prompt(self,
+                          path: str = typer.Argument(help="Filepath for the system prompt to load"),
+                          chat_name: Optional[str] = typer.Option(None, "--chat", help="Specify the chat history name to load the system prompt.")):
+        """
+        Sets the system prompt for the given chat history.
+        """
+        if chat_name is None:
+            print(f"Error: The --chat option is required to specify which chat history to modify.")
+            raise typer.Exit(code=1)
+
+        try:
+            with open(path, 'r', encoding='utf-8') as f:
+                system_prompt = f.read()
+
+        except FileNotFoundError:
+            print(f"Error: The file '{path}' was not found.")
+        except Exception as e:
+            print(f"An error occurred reading the data: {e}")
+
+        self.chat_manager.set_system_prompt(chat_name, system_prompt)
 
     # -------------- config commands -------------- #
 
