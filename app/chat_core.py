@@ -1,36 +1,18 @@
 from ai_core.message import Message
 from ai_core.chat import Chat
-from ai_core.model import GeminiModel, GeminiModelParameters
+from ai_core.model import Model
 from ai_core.util import output_stream, markdown_print
-
-import os
-from dotenv import find_dotenv, load_dotenv
-
-load_dotenv(find_dotenv())
-
-api_key = os.getenv("GEMINI_API_KEY")
-
-geminiParameters = GeminiModelParameters(
-    temperature = 0.3,
-    top_p = 0.75,
-    num_predict = 8000
-)
-
-model_name = "gemini-2.0-flash"
-model = GeminiModel(model_name,
-                    api_key,
-                    debug = False,
-                    parameters=geminiParameters)
 
 help_message = """
 type quit/bye/exit to quit (saves your chat)
 type clear to clear the chat history (asks for confirmation)
 type retry to regenerate the previous AI response
 type save to save the chat so far
+type systemprompt/system to display and/or change the system prompt
 type help to display this message
 """
 
-def output_response(chat, do_stream, do_markdown):
+def output_response(chat : Chat, model : Model, do_stream : bool, do_markdown : bool):
     if do_stream:
         stream = model.stream_chat(chat.get_gemini_payload())
         response = output_stream(stream, do_markdown=do_markdown)
@@ -43,7 +25,7 @@ def output_response(chat, do_stream, do_markdown):
 
     return response
 
-def single_message(message : str, chat_source = None, do_stream = True, do_markdown = True):
+def single_message(message : str, model : Model, chat_source = None, do_stream = True, do_markdown = True):
     chat = Chat()
 
     if chat_source is not None: #load cha
@@ -51,13 +33,13 @@ def single_message(message : str, chat_source = None, do_stream = True, do_markd
 
     chat.add_message(Message("user", message))
 
-    response = output_response(chat, do_stream, do_markdown)
+    response = output_response(chat, model, do_stream, do_markdown)
 
     if chat_source is not None:
         chat.add_message(Message("assistant", response))
         chat.export(chat_source, model, False)
 
-def start_chat(chat_source, do_stream = True, do_markdown = True):
+def start_chat(chat_source : str, model : Model, do_stream = True, do_markdown = True):
     chat = Chat()
 
     chat.load(chat_source, False)
@@ -97,6 +79,6 @@ def start_chat(chat_source, do_stream = True, do_markdown = True):
 
             chat.add_message(Message("user", prompt))
 
-        response = output_response(chat, do_stream, do_markdown)
+        response = output_response(chat, model, do_stream, do_markdown)
 
         chat.add_message(Message("assistant", response))

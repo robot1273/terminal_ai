@@ -12,6 +12,14 @@ class InvalidModelException(Exception):
     """Exception raised when an invalid model is requested"""
     pass
 
+class NoInternetException(InvalidModelException):
+    """Exception raised when an attempting to request a model with no internet connection"""
+    pass
+
+class InvalidAPIKeyException(InvalidModelException):
+    """Exception raised when an invalid api key is given"""
+    pass
+
 class ModelParameters:
     """
     A class to store and manage parameters
@@ -71,39 +79,56 @@ class Model:
     """
     Generic model to host LLM
     """
-    def __init__(self, model_name: str, debug: bool = False, parameters: ModelParameters = None):
+    def __init__(self, model_name: str, api_key : str, debug: bool = False, parameters: ModelParameters = None):
         """
         :param model_name: The name of the model to use.
+        :param api_key : The api key to use for this model
         :param debug: Display debug messages or not. Defaults to False
         :param parameters: The model parameters to use
-        :raises InvalidModelException: Raised when an invalid model name is given
+        :raises InvalidModelException: Raised when an error occurs retrieving model
         """
         self.model_name = model_name
+        self.api_key = api_key
         self.debug = debug
         self.parameters = parameters
 
     def raise_model_exists(self):
         """
-        Checks if model name exists in gemini API
-        :raises InvalidModelException: Raised when an invalid model name is given. Also raised when there is no internet.
+        Checks if model name exists from API
+        Also checks if no internet connection found
+        :raises InvalidModelException: Raised when an invalid model name is given.
+        :raises NoInternetException: Raised when no internet connection is found while attempting to retrieve model
+        :raises InvalidAPIKeyException: Raised when an invalid API key is given.
         """
         pass
+
+    def invoke(self, prompt : str = None) -> str:
+        """
+        Invoke the LLM with the given prompt
+        :param prompt: The prompt to invoke
+        :return: The output message
+        :raises ModelError: when an error occurs
+        """
+        pass
+
+class LocalModel(Model):
+    """Model specifically for local models (mainly, and probably exclusively, ollama)"""
+    def __init__(self, model_name: str, debug: bool = False, parameters: ModelParameters = None):
+        super().__init__(model_name, None, debug, parameters)
 
 class GeminiModel(Model):
     """
     Interface to send prompts to Gemini models with Google API. Uses REST API over python SDK for finer-grained control
     """
-    def __init__(self, model_name: str, API_KEY : str, debug: bool = False, parameters: GeminiModelParameters = None):
+    def __init__(self, model_name: str, api_key : str, debug: bool = False, parameters: GeminiModelParameters = None):
         """
-        :param model_name: The name of the model to use. Should be efxisting ollama model
-        :param API_KEY: The API key for accessing the model
+        :param model_name: The name of the model to use. Should be existing ollama model
+        :param api_key: The API key for accessing the model
         :param debug: Display debug messages or not. Defaults to False
         :param parameters: The model parameters to use
-        :raises InvalidModelException: Raised when an invalid model name is given
+        :raises InvalidModelException: Raised when an error occurs retrieving model
         """
-        super().__init__(model_name, debug, parameters)
-        self.API_KEY = API_KEY
-
+        super().__init__(model_name, api_key, debug, parameters)
         self.raise_model_exists()
 
     def get_response(self, prompt : str = None, payload : dict = None, stream : bool = False, timeout : int = 60):
@@ -119,9 +144,9 @@ class GeminiModel(Model):
         :raises ModelError: Raised for any network-level errors (e.g., connection, timeout) or for non-2xx HTTP status codes.
         """
         if stream: #Pick the URL for streaming or not streaming
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model_name}:streamGenerateContent?alt=sse&key={self.API_KEY}"
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model_name}:streamGenerateContent?alt=sse&key={self.api_key}"
         else:
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model_name}:generateContent?key={self.API_KEY}"
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model_name}:generateContent?key={self.api_key}"
 
         if payload is None:
             prompt = "" if prompt is None else prompt
@@ -147,13 +172,15 @@ class GeminiModel(Model):
         """
         Checks if model name exists in gemini API
         :raises InvalidModelException: Raised when an invalid model name is given. Also raised when there is no internet.
+        :raises NoInternetException: Raised when no internet connection is found while attempting to retrieve model
+        :raises InvalidAPIKeyException: Raised when an invalid API key is given.
         """
 
         if not connected_to_internet():
-            raise InvalidModelException(f"Error fetching model : Not connected to the internet")
+            raise NoInternetException(f"Error fetching model : Not connected to the internet")
 
         try:
-            models_url = f"https://generativelanguage.googleapis.com/v1beta/models?key={self.API_KEY}"
+            models_url = f"https://generativelanguage.googleapis.com/v1beta/models?key={self.api_key}"
             response = requests.get(models_url)
             response.raise_for_status()
 
@@ -171,7 +198,7 @@ class GeminiModel(Model):
                                             f"Valid model names are: {", ".join(available_model_ids)}")
 
         except requests.exceptions.RequestException as e:
-            raise InvalidModelException(f"Error fetching model: {e}\n"
+            raise InvalidAPIKeyException(f"Error fetching model: {e}\n"
                                         f"Check your API key is correct")
         except Exception as e:
             raise InvalidModelException(f"An unexpected error occurred while fetching models: {e}")

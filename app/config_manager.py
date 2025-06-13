@@ -1,7 +1,36 @@
 import os
 import yaml
 
-from .constants import config_path
+from .constants import config_path, data_path
+
+from dotenv import find_dotenv, load_dotenv
+load_dotenv(find_dotenv())
+
+def generate_default_config(do_default = False):
+    #there is a design issue - no two models can have the same name, or this doesn't work
+    #but im not fixing that, who cares, your fault for importing two different models with the same name lol
+
+    if do_default:
+        return {
+                "model_sources" : {
+                    "gemini" : { "api_key" : os.getenv("GEMINI_API_KEY") }
+                },
+                "models" : [
+                    {
+                        "name" : "gemini-2.0-flash",
+                        "source" : "gemini"
+                     }
+                ],
+                "default_model": "gemini-2.0-flash"
+                }
+    else:
+        return {
+                "model_sources": {  # API hosters (gemini, ollama, openai etc)
+                    "gemini": {"api_key": None}
+                },
+                "models": [],  # Specific models (llama3, gemini flash 2.0, etc)
+                "default_model": None  # The model to use by default
+                }
 
 class ConfigManager:
     """
@@ -31,16 +60,16 @@ class ConfigManager:
             self.reset_config()
             print(f"Config file not found, new config created at {config_path}")
 
-    def reset_config(self) -> None:
+    def reset_config(self, do_default_config = False) -> None:
         """
         Reset config to default values.
         Creates directory if it doesn't exist yet
         """
         if not os.path.exists(config_path):
             os.makedirs(os.path.dirname(config_path), exist_ok=True)
+
         with open(config_path, "w") as f:
-            f.write("# Default config\n")
-            #TODO write a default_config.yaml file that is stored in source code to config.yaml instead of hardcoded
+            yaml.dump(generate_default_config(do_default_config), f, sort_keys=False)
 
     def get_config_variable(self, variable_name) -> any:
         """
@@ -60,4 +89,4 @@ class ConfigManager:
         """
         self.data[variable] = new_value
         with open(config_path, 'w') as f:
-            yaml.safe_dump(self.data, f, default_flow_style=False, sort_keys=False)
+            yaml.dump(self.data, f, default_flow_style=False, sort_keys=False, allow_unicode=True, Dumper=yaml.Dumper)
