@@ -1,5 +1,5 @@
-from ai_core.message import Message
 from ai_core.chat import Chat
+from ai_core.message import Message
 from ai_core.model import Model
 from ai_core.util import output_stream, markdown_print
 

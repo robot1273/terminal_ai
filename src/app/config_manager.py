@@ -1,9 +1,10 @@
 import os
+
 import yaml
-
-from .constants import config_path, data_path
-
 from dotenv import find_dotenv, load_dotenv
+
+from app.constants import config_path
+
 load_dotenv(find_dotenv())
 
 def generate_default_config(do_default = False):

@@ -1,13 +1,13 @@
 from typing import Optional
+
 import typer
 
-from ai_core.model import InvalidModelException
 from app import chat_core
-from .config_manager import ConfigManager
-from .chat_manager import ChatManager
-from .model_manager import ModelManager
-from .constants import *
-from .util import pretty_terminal_table
+from app.chat_manager import ChatManager
+from app.config_manager import ConfigManager
+from app.constants import *
+from app.model_manager import ModelManager
+from app.util import pretty_terminal_table
 
 
 class App:
@@ -157,7 +157,7 @@ class App:
         print(f"Chat data is in {data_path}")
 
     def config_reset_command(self, preset_config: bool = typer.Option(False, "--default", "-d", is_flag=True,
-                             help = "Use an alternative config that attempts to find a .env file in the main.py location for api keys. Really only exists for debugging, feel free to ignore.")):
+                             help = "Use an alternative config that attempts to find a .env file in the __main__.py location for api keys. Really only exists for debugging, feel free to ignore.")):
         """
         Resets the config file to default
         """
@@ -258,3 +258,10 @@ class App:
             print()
         else:
             print("No models found.")
+
+def run():
+    app = App()
+    app.app()
+
+if __name__ == "__main__":
+    run()

@@ -1,0 +1,19 @@
+[project]
+name = "terminal-ai-chat"
+version = "0.1.0"
+description = "A simple CLI tool to talk to an LLM in the terminal."
+dependencies = [
+                "typer",
+                "PyYAML",
+                "rich",
+                "requests",
+                "platformdirs",
+                "python-dotenv",
+                "setuptools"
+                ]
+
+[project.scripts]
+chat = "app.main:run"
+
+[tool.setuptools.packages.find]
+where = ["src"]

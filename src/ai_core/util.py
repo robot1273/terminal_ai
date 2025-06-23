@@ -1,8 +1,9 @@
 import urllib.request
 
 from rich.console import Console
-from rich.markdown import Markdown
 from rich.live import Live
+from rich.markdown import Markdown
+
 
 def markdown_print(text, end="\n", do_markdown=True):
     console = Console()

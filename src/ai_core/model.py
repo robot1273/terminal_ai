@@ -1,8 +1,10 @@
 import json
+from typing import Iterator
+
 import requests
 
-from typing import Iterator
 from .util import connected_to_internet
+
 
 class ModelError(Exception):
     """Base exception class for errors related to model output"""

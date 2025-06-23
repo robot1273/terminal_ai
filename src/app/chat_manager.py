@@ -1,13 +1,12 @@
 import datetime
 import os
+from pathlib import Path
 
 import yaml
 
-from .constants import data_path
-from pathlib import Path
+from app.constants import data_path, cli_keyword
+from app.util import pretty_terminal_table
 
-from .constants import cli_keyword
-from .util import pretty_terminal_table
 
 class ChatManager:
     """

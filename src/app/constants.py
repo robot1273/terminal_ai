@@ -1,7 +1,7 @@
-from platformdirs import user_config_dir, user_data_dir
 import os
 
-from ai_core.model import GeminiModel#, OllamaModel
+from ai_core.model import GeminiModel  # , OllamaModel
+from platformdirs import user_config_dir, user_data_dir
 
 cli_keyword = "chat" #The command alias the program uses
 program_name = "ai_chat" #The directory name for the program

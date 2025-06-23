@@ -1,6 +1,9 @@
-from .constants import MODEL_SOURCES, cli_keyword
-from ai_core.model import Model, LocalModel, InvalidModelException, InvalidAPIKeyException, GeminiModel
 from typing import Type
+
+from ai_core.model import Model, LocalModel, InvalidModelException, InvalidAPIKeyException
+
+from app.constants import MODEL_SOURCES, cli_keyword
+
 
 class ModelManager:
     def __init__(self, config_manager):

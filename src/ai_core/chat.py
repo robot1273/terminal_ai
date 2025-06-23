@@ -3,6 +3,7 @@ import yaml
 from .message import Message
 from .model import Model
 
+
 class Chat:
     """
     Stores all messages sent by the user or LLM agents
