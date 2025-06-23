@@ -1,6 +1,10 @@
 [project]
 name = "terminal-ai-chat"
-version = "0.1.1"
+version = "0.1.2"
+authors = [
+  { name="Anas Ahmed", email="anas.ia.ahmed@gmail.com" },
+]
+
 description = "A simple CLI tool to talk to an LLM in the terminal."
 dependencies = [
                 "typer",
@@ -8,15 +12,17 @@ dependencies = [
                 "rich",
                 "requests",
                 "platformdirs",
-                "python-dotenv",
-                "setuptools"
+                "python-dotenv"
                 ]
+
+readme = "README.md"
+license = "MIT"
+
+[project.urls]
+repository = "https://github.com/robot1273/terminal_ai_chat"
 
 [project.scripts]
 chat = "app.main:run"
 
 [tool.setuptools.packages.find]
 where = ["src"]
-
-[project]
-repository = "https://github.com/robot1273/terminal_ai_chat"
