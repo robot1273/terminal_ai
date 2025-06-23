@@ -3,18 +3,19 @@ from typing import Optional
 import typer
 
 from app import chat_core
-from app.chat_manager import ChatManager
-from app.config_manager import ConfigManager
 from app.constants import *
-from app.model_manager import ModelManager
 from app.util import pretty_terminal_table
+
+from app.config_manager import ConfigManager
+from app.model_manager import ModelManager
+from app.chat_manager import ChatManager
 
 
 class App:
     def __init__(self):
         self.config_manager = ConfigManager()
-        self.chat_manager = ChatManager()
         self.model_manager = ModelManager(self.config_manager)
+        self.chat_manager = ChatManager()
 
         self.app = typer.Typer(context_settings={"help_option_names": ["-h", "--help"]},
                           no_args_is_help=True,

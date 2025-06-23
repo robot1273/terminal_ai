@@ -1,42 +1,23 @@
 import os
 
 import yaml
-from dotenv import find_dotenv, load_dotenv
-
 from app.constants import config_path
 
-load_dotenv(find_dotenv())
-
-def generate_default_config(do_default = False):
+def generate_default_config():
     #there is a design issue - no two models can have the same name, or this doesn't work
     #but im not fixing that, who cares, your fault for importing two different models with the same name lol
 
-    if do_default:
-        return {
-                "model_sources" : {
-                    "gemini" : { "api_key" : os.getenv("GEMINI_API_KEY") }
-                },
-                "models" : [
-                    {
-                        "name" : "gemini-2.0-flash",
-                        "source" : "gemini"
-                     }
-                ],
-                "default_model": "gemini-2.0-flash"
-                }
-    else:
-        return {
-                "model_sources": {  # API hosters (gemini, ollama, openai etc)
-                    "gemini": {"api_key": None}
-                },
-                "models": [],  # Specific models (llama3, gemini flash 2.0, etc)
-                "default_model": None  # The model to use by default
-                }
+    return {
+        "model_sources": {  # API hosters (gemini, ollama, openai etc)
+            "gemini": {"api_key": None}
+        },
+        "models": [],  # Specific models (llama3, gemini flash 2.0, etc)
+        "default_model": None  # The model to use by default
+    }
 
 class ConfigManager:
     """
     Handles the configuration file, safely reading and writing to the config file
-    TODO actually use, is currently kinda useless
     """
 
     def __init__(self):

@@ -11,7 +11,7 @@ class ModelManager:
         self.saved_models = config_manager.get_config_variable("models")
         self.default_model_name = config_manager.get_config_variable("default_model")
 
-        if len(self.model_source_data) == 0:
+        if self.model_source_data is None or len(self.model_source_data) == 0:
             print("Warning - No model sources found in config. Ensure config file is valid.")
             return
 
