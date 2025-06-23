@@ -1,6 +1,6 @@
 [project]
 name = "terminal-ai-chat"
-version = "0.1.0"
+version = "0.1.1"
 description = "A simple CLI tool to talk to an LLM in the terminal."
 dependencies = [
                 "typer",
@@ -17,3 +17,6 @@ chat = "app.main:run"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[project]
+repository = "https://github.com/robot1273/terminal_ai_chat"
